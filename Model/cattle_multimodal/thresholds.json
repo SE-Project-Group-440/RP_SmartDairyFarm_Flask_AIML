@@ -1,0 +1,16 @@
+{
+  "image_confidence_threshold": 0.70,
+
+  "symptom_thresholds": {
+    "FMD": 2,
+    "LSD": 2
+  },
+
+  "fusion_rules": {
+    "image_priority": true,
+    "symptom_can_override": true,
+    "report_can_override": true
+  },
+
+  "fallback_prediction": "Uncertain"
+}
