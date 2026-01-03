@@ -1,9 +1,11 @@
-from flask import Blueprint
-from controllers.cattle_disease_controller import predict_cattle_disease
+from fastapi import APIRouter, Header
+from controllers.cattle_disease_controller import predict_cattle_disease, CattlePredictRequest
 
-cattle_disease_bp = Blueprint("cattle_disease", __name__)
+router = APIRouter(prefix="/api/cattle", tags=["Cattle Disease"])
 
-cattle_disease_bp.route(
-    "/predict/cattle-disease",
-    methods=["POST"]
-)(predict_cattle_disease)
+@router.post("/predict")
+def predict(
+    data: CattlePredictRequest,
+    authorization: str | None = Header(default=None)
+):
+    return predict_cattle_disease(data, authorization)

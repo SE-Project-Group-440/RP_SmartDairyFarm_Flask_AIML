@@ -1,18 +1,11 @@
-import json
+def analyze_symptoms(text):
+    text = text.lower()
+    score = {"FMD":0, "LSD":0}
 
-with open("Model/cattle_multimodal/thresholds.json") as f:
-    THRESHOLDS = json.load(f)
+    if "salivation" in text or "blisters" in text:
+        score["FMD"] += 2
 
-def fuse_results(result):
-    # Image has highest priority
-    if "image_prediction" in result:
-        return result["image_prediction"]
+    if "nodules" in text or "skin lesions" in text:
+        score["LSD"] += 2
 
-    # Symptom-based decision
-    if "symptoms" in result:
-        for disease, score in result["symptoms"].items():
-            if score >= THRESHOLDS["symptom_thresholds"].get(disease, 99):
-                return disease
-
-    # Fallback
-    return THRESHOLDS["fallback_prediction"]
+    return score

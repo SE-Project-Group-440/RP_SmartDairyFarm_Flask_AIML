@@ -1,10 +1,18 @@
-from flask import request, jsonify
-from services.cattle_disease_service import run_prediction
+from fastapi import APIRouter
+from controllers.cattle_disease_controller import predict_cattle_disease
 
-def predict_cattle_disease():
-    image = request.files.get("image")
-    report = request.files.get("report")
-    symptoms = request.form.get("symptoms")
+router = APIRouter(prefix="/api/cattle", tags=["Cattle Disease"])
 
-    result = run_prediction(image, report, symptoms)
-    return jsonify(result)
+@router.post("/predict")
+def predict(
+    image=File(...),
+    report=File(None),
+    symptoms=Form(None),
+    authorization=Header(None)
+):
+    return predict_cattle_disease(
+        image=image,
+        report=report,
+        symptoms=symptoms,
+        authorization=authorization
+    )
