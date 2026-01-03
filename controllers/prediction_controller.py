@@ -1,21 +1,24 @@
+from fastapi import HTTPException, Header
+from pydantic import BaseModel
 from services.Lactation_Service import ModelService
 from services.auth_service import AuthService
-from flask import jsonify, request
 
 model_service = ModelService()
+
+class PredictRequest(BaseModel):
+    features: list
 
 class PredictionController:
 
     @staticmethod
-    def predict():
-        auth = request.headers.get("Authorization", "")
-        token = auth.replace("Bearer ", "")
-        
-        if not AuthService.validate_token(token):
-            return jsonify({"error": "Unauthorized"}), 401
-        
-        data = request.get_json()
-        features = data.get("features")
+    def predict(data: PredictRequest, authorization: str | None):
+        # Extract token
+        token = (authorization or "").replace("Bearer ", "")
 
-        prediction = model_service.predict(features)
-        return jsonify({"prediction": prediction})
+        # Validate token
+        if not AuthService.validate_token(token):
+            raise HTTPException(status_code=401, detail="Unauthorized")
+
+        # Prediction
+        prediction = model_service.predict(data.features)
+        return {"prediction": prediction}
