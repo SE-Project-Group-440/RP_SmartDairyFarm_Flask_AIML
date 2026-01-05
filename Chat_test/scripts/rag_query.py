@@ -50,8 +50,10 @@ def build_prompt(context: str, query: str) -> str:
 - ගව පාලකයාට තේරුම් ගත හැකි ලෙස
 - අවශ්‍ය නම් උදාහරණ සහ හේතු සමඟ
 - ප්‍රායෝගික උපදෙස් ලෙස
-- සියලුම තොරතුරු සම්පූර්ණයෙන් සපයන්න, වාක්‍ය හෝ අදහස් අඩංගු නොවී අඩක් නොනවත්වා.
-- 
+- සියලුම තොරතුරු සම්පූර්ණයෙන් සපයන්න
+- වාක්‍ය හෝ අදහස් අඩංගු නොවී අඩක් නොනවත්වා
+- ප්‍රශ්නයට සම්පූර්ණ සහ විස්තරාත්මක පිළිතුරක් ලබාදෙන්න
+
 """
 
 def rag_answer(query: str, top_k: int = 3):
@@ -68,11 +70,18 @@ def rag_answer(query: str, top_k: int = 3):
         return "මෙම ප්‍රශ්නයට සම්බන්ධ තොරතුරු දැනුම් පදනමේ නොමැත."
     
      # ✅✅ ADD THIS BLOCK (DEDUPLICATION FIX) ✅✅
-    unique_chunks = list(
-        dict.fromkeys(
-            [doc.page_content.strip() for doc in retrieved_docs]
-        )
-    )
+    MAX_CHARS = 6000  # safe for Sinhala
+
+    unique_chunks = []
+    current_len = 0
+
+    for doc in retrieved_docs:
+        text = doc.page_content.strip()
+        if current_len + len(text) > MAX_CHARS:
+            break
+        unique_chunks.append(text)
+        current_len += len(text)
+
 
     context = "\n\n".join(unique_chunks)
     
@@ -81,6 +90,6 @@ def rag_answer(query: str, top_k: int = 3):
         model="llama-3.3-70b-versatile",
         messages=[{"role": "user", "content": prompt}],
         temperature=0.2,
-        max_tokens=2048
+        max_tokens=8192
     )
     return response.choices[0].message.content.strip()

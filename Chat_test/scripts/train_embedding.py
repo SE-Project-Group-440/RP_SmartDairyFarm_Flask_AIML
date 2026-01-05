@@ -43,7 +43,7 @@ def train_epoch(model, dataloader, optimizer, device="cpu"):
         total_loss += loss.item()
     return total_loss / len(dataloader)
 
-for epoch in range(5):
+for epoch in range(30):
     loss = train_epoch(model, dataloader, optimizer, device)
     print(f"Epoch {epoch+1} Loss: {loss:.4f}")
 

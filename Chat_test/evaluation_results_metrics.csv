@@ -1,6 +1,6 @@
-model,latency_sec,context_overlap,sinhala_ratio,answer_length
-llama_70b,2.47,0.176,0.771,74
-llama_8b,1.34,0.739,0.763,88
-llama_guard,0.39,0.0,0.0,1
-gpt_120b,1.69,0.032,0.69,78
-gpt_20b,0.67,0.0,0.0,13
+model,latency_sec,context_overlap,sinhala_ratio,answer_length,repetition_ratio,sentence_diversity
+llama_70b,4.09,0.34,0.778,99,0.465,1.0
+llama_8b,1.69,0.14,0.825,91,0.527,1.0
+llama_guard,0.48,0.0,0.0,1,0.0,1.0
+gpt_120b,2.39,0.119,0.695,249,0.357,1.0
+gpt_20b,1.44,0.0,0.0,0,1.0,0.0

@@ -1,3 +1,9 @@
+import sys
+import os
+
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(PROJECT_ROOT)
+
 import time
 import re
 import pickle
@@ -6,6 +12,7 @@ import torch
 import faiss
 import csv
 import matplotlib.pyplot as plt
+import pandas as pd
 from dotenv import load_dotenv
 from groq import Groq
 
@@ -27,23 +34,19 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 # ======================
 docs = load_all_knowledge("data/knowledge_base")
 
-# Load BPE
 with open("models/bpe_merges.pkl", "rb") as f:
     bpe_merges = pickle.load(f)
 with open("models/bpe_vocab.pkl", "rb") as f:
     bpe_vocab = pickle.load(f)
 
-# Load embedding model
 model = MiniEmbeddingModel(len(bpe_vocab)).to(device)
 model.load_state_dict(
     torch.load("models/sinhala_embedding_model.pt", map_location=device)
 )
 model.eval()
 
-# Load FAISS index
 index = faiss.read_index("vectorstore/knowledge.index")
 
-# Groq client
 client = Groq()
 
 # ======================
@@ -60,7 +63,7 @@ def get_frozen_context(query, top_k=3):
     return "\n\n".join([docs[i].page_content for i in indices[0]])
 
 # ======================
-# Evaluation metrics
+# Metrics
 # ======================
 def context_overlap(answer, context):
     a = set(answer.split())
@@ -72,6 +75,15 @@ def sinhala_ratio(text):
 
 def answer_length(answer):
     return len(answer.split())
+
+def repetition_ratio(text):
+    words = text.split()
+    return 1 - (len(set(words)) / max(len(words), 1))
+
+def sentence_diversity(text):
+    sents = re.split(r"[.!?]", text)
+    sents = [s.strip() for s in sents if s.strip()]
+    return len(set(sents)) / max(len(sents), 1)
 
 # ======================
 # Models
@@ -111,7 +123,9 @@ for name, model_id in MODELS.items():
         "latency_sec": latency,
         "context_overlap": round(context_overlap(answer, context), 3),
         "sinhala_ratio": round(sinhala_ratio(answer), 3),
-        "answer_length": answer_length(answer)
+        "answer_length": answer_length(answer),
+        "repetition_ratio": round(repetition_ratio(answer), 3),
+        "sentence_diversity": round(sentence_diversity(answer), 3)
     }
 
     results.append(result)
@@ -124,104 +138,75 @@ for name, model_id in MODELS.items():
 # ======================
 # Save CSV
 # ======================
-with open("evaluation_results_metrics.csv", "w", newline="", encoding="utf-8") as f:
-    writer = csv.DictWriter(
-        f,
-        fieldnames=[
-            "model",
-            "latency_sec",
-            "context_overlap",
-            "sinhala_ratio",
-            "answer_length"
-        ]
-    )
-    writer.writeheader()
-    writer.writerows(results)
-
-print("\n✅ Evaluation results saved to evaluation_results_metrics.csv")
-
-# ======================
-# Plotting
-# ======================
-models = [r["model"] for r in results]
-
-def plot_bar(values, title, ylabel):
-    plt.figure(figsize=(6,4))
-    plt.bar(models, values)
-    plt.title(title)
-    plt.ylabel(ylabel)
-    plt.xlabel("Models")
-    for i, v in enumerate(values):
-        plt.text(i, v + 0.01, str(v), ha="center", fontweight="bold")
-    plt.show()
-
-plot_bar(
-    [r["latency_sec"] for r in results],
-    "Latency Comparison",
-    "Seconds"
-)
-
-plot_bar(
-    [r["context_overlap"] for r in results],
-    "Context Overlap",
-    "Overlap Ratio"
-)
-
-plot_bar(
-    [r["sinhala_ratio"] for r in results],
-    "Sinhala Language Fluency",
-    "Sinhala Character Ratio"
-)
-
-plot_bar(
-    [r["answer_length"] for r in results],
-    "Answer Length",
-    "Word Count"
-)
-
-# ======================
-# Determine overall best model
-# ======================
-
-# Step 1: Rank each model per metric
-# Lower latency is better → rank ascending
-# Other metrics higher is better → rank descending
-
-import pandas as pd
-
 df = pd.DataFrame(results)
+df.to_csv("evaluation_results_metrics.csv", index=False, encoding="utf-8")
+print("\n✅ Results saved to evaluation_results_metrics.csv")
 
-# Rank metrics
+# ======================
+# Ranking
+# ======================
 df["latency_rank"] = df["latency_sec"].rank(ascending=True)
 df["overlap_rank"] = df["context_overlap"].rank(ascending=False)
 df["sinhala_rank"] = df["sinhala_ratio"].rank(ascending=False)
-# For answer length, closer to ideal length is better
+
 ideal_length = 100
-df["length_rank"] = (df["answer_length"] - ideal_length).abs().rank(ascending=True)
+df["length_rank"] = (df["answer_length"] - ideal_length).abs().rank()
 
-# Step 2: Sum ranks for overall performance
-df["total_rank"] = df["latency_rank"] + df["overlap_rank"] + df["sinhala_rank"] + df["length_rank"]
+df["repetition_rank"] = df["repetition_ratio"].rank()
+df["diversity_rank"] = df["sentence_diversity"].rank(ascending=False)
 
+df["total_rank"] = (
+    df["latency_rank"]
+    + df["overlap_rank"]
+    + df["sinhala_rank"]
+    + df["length_rank"]
+    + df["repetition_rank"]
+    + df["diversity_rank"]
+)
 
-# ======================
-# Determine best models per metric
-# ======================
-
-best_latency = df.loc[df["latency_sec"].idxmin(), "model"]
-best_overlap = df.loc[df["context_overlap"].idxmax(), "model"]
-best_sinhala = df.loc[df["sinhala_ratio"].idxmax(), "model"]
-ideal_length = 100
-best_length = df.loc[(df["answer_length"] - ideal_length).abs().idxmin(), "model"]
-
-# Step 2: Best overall model → lowest total rank
 best_overall = df.loc[df["total_rank"].idxmin(), "model"]
 
-# Print results
-print("\n🏆 BEST MODELS PER METRIC")
-print(f"Fastest (lowest latency): {best_latency}")
-print(f"Highest context overlap: {best_overlap}")
-print(f"Best Sinhala fluency: {best_sinhala}")
-print(f"Best answer length (closest to {ideal_length} words): {best_length}")
+print("\n🌟 OVERALL BEST MODEL:", best_overall)
 
-print(f"\n🌟 OVERALL BEST MODEL: {best_overall}")
+# ======================
+# 📊 VISUALIZATION
+# ======================
+plt.figure()
+plt.bar(df["model"], df["latency_sec"])
+plt.title("Model Latency Comparison")
+plt.ylabel("Seconds")
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
 
+plt.figure()
+plt.bar(df["model"], df["context_overlap"])
+plt.title("Context Overlap Score")
+plt.ylabel("Overlap Ratio")
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+
+plt.figure()
+plt.bar(df["model"], df["sinhala_ratio"])
+plt.title("Sinhala Language Fluency")
+plt.ylabel("Sinhala Character Ratio")
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+
+plt.figure()
+plt.bar(df["model"], df["repetition_ratio"])
+plt.title("Repetition Ratio (Lower is Better)")
+plt.ylabel("Repetition")
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+
+plt.figure()
+plt.bar(df["model"], df["sentence_diversity"])
+plt.title("Sentence Diversity")
+plt.ylabel("Diversity Score")
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
