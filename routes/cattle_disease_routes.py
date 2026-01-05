@@ -1,11 +1,19 @@
-from fastapi import APIRouter, Header
-from controllers.cattle_disease_controller import predict_cattle_disease, CattlePredictRequest
+# routes/cattle_disease_routes.py
+from fastapi import APIRouter, File, Form, Header, UploadFile
+from controllers.cattle_disease_controller import predict_cattle_disease
 
 router = APIRouter(prefix="/api/cattle", tags=["Cattle Disease"])
 
 @router.post("/predict")
-def predict(
-    data: CattlePredictRequest,
-    authorization: str | None = Header(default=None)
+async def predict(
+    image: UploadFile | None = File(None),
+    report: UploadFile | None = File(None),
+    symptoms: str | None = Form(None),
+    authorization: str | None = Header(None)
 ):
-    return predict_cattle_disease(data, authorization)
+    return await predict_cattle_disease(
+        image=image,
+        report=report,
+        symptoms=symptoms,
+        authorization=authorization
+    )
