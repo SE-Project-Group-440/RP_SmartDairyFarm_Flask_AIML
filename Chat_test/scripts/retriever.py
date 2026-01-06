@@ -1,4 +1,3 @@
-# scripts/retriever.py
 import pickle
 import faiss
 import numpy as np
@@ -31,9 +30,7 @@ model.eval()
 # Load FAISS index
 index = faiss.read_index(str(VECTOR_DIR / "knowledge.index"))
 
-# Load documents
 docs = load_all_knowledge("data/knowledge_base")
-
 
 def retrieve_faiss_custom(query: str, top_k: int = 5):
     model.eval()

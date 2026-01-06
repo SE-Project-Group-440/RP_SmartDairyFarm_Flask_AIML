@@ -7,9 +7,7 @@ from scripts.utils import QAEmbeddingDataset, collate_fn, encode_text, load_feed
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-# Load docs
 docs = load_all_knowledge("data/knowledge_base")
-
 
 # Load BPE
 with open("models/bpe_merges.pkl", "rb") as f:
@@ -48,4 +46,4 @@ for epoch in range(30):
     print(f"Epoch {epoch+1} Loss: {loss:.4f}")
 
 torch.save(model.state_dict(), "models/sinhala_embedding_model.pt")
-print("✅ Embedding model saved.")
+print("Embedding model saved.")

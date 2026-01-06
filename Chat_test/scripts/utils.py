@@ -1,5 +1,3 @@
-# scripts/utils.py
-
 import json
 import pickle
 import os
@@ -11,10 +9,6 @@ import torch.nn as nn
 from torch.utils.data import Dataset
 from torch.nn.utils.rnn import pad_sequence
 
-
-# ==============================
-# Knowledge Document
-# ==============================
 class KnowledgeDocument:
     def __init__(self, question: str, answer: str, metadata: Dict):
         self.question = question
@@ -43,10 +37,7 @@ def load_feeding_json(json_path: str) -> List[KnowledgeDocument]:
         )
     return documents
 
-
-# ==============================
 # BPE Tokenizer
-# ==============================
 def prepare_corpus(docs):
     texts = []
     for doc in docs:
@@ -97,9 +88,8 @@ def encode_text(text, bpe_merges, bpe_vocab):
     )
 
 
-# ==============================
+
 # Dataset
-# ==============================
 class QAEmbeddingDataset(Dataset):
     def __init__(self, docs, bpe_merges, bpe_vocab):
         self.docs = docs
@@ -122,9 +112,9 @@ def collate_fn(batch):
     return qs, as_
 
 
-# ==============================
+
 # Embedding Model
-# ==============================
+
 class MiniEmbeddingModel(nn.Module):
     def __init__(self, vocab_size, emb_dim=128):
         super().__init__()
@@ -175,5 +165,5 @@ def load_all_knowledge(base_dir: str) -> List[KnowledgeDocument]:
             docs = load_qa_json(json_path)
             all_docs.extend(docs)
 
-    print(f"✅ Total knowledge documents loaded: {len(all_docs)}")
+    print(f"Total knowledge documents loaded: {len(all_docs)}")
     return all_docs

@@ -12,5 +12,5 @@ class ChatResponse(BaseModel):
 
 @app.post("/chat", response_model=ChatResponse)
 def chat(req: ChatRequest):
-    answer = rag_answer(req.query)   # ✅ FIX HERE
+    answer = rag_answer(req.query)  
     return {"answer": answer}
