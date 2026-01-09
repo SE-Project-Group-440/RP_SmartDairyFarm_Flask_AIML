@@ -68,7 +68,7 @@ async def run_prediction(
         try:
             report_bytes = await report_file.read()
             img = Image.open(BytesIO(report_bytes)).convert("RGB")  # Convert to PIL Image
-            text = extract_text(img)  # Pass PIL image to OCR
+            text = extract_text(img)  
             result["blood_report"] = text
 
         except Exception as e:
