@@ -51,7 +51,6 @@ def build_prompt(context: str, query: str) -> str:
 - ගව පාලකයාට තේරුම් ගත හැකි ලෙස
 - අවශ්‍ය නම් උදාහරණ සහ හේතු සමඟ
 - ප්‍රායෝගික උපදෙස් ලෙස
-- සියලුම තොරතුරු සම්පූර්ණයෙන් සපයන්න
 - වාක්‍ය හෝ අදහස් අඩංගු නොවී අඩක් නොනවත්වා
 - ප්‍රශ්නයට සම්පූර්ණ සහ විස්තරාත්මක පිළිතුරක් ලබාදෙන්න
 - එකම අදහස නැවත නැවත නොලියන්න
@@ -122,7 +121,7 @@ def rag_answer(query: str, top_k: int = 3) -> str:
             model="llama-3.3-70b-versatile",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.2,
-            max_tokens=1000
+            max_tokens=8000
         )
         return response.choices[0].message.content.strip()
     except Exception as e:
