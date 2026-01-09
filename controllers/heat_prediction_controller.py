@@ -1,7 +1,7 @@
 from services.heat_prediction_service import predict_thi_1hr
 
 def get_heat_prediction(cattle_id: str):
-    # Ensure Firebase key format: Cattle1, Cattle2
+    
     cattle_id = cattle_id.capitalize()
 
     thi = predict_thi_1hr(cattle_id)
