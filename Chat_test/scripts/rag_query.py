@@ -5,7 +5,7 @@ import numpy as np
 import faiss
 from dotenv import load_dotenv
 
-from google import genai
+import google.generativeai as genai
 from google.genai import types # ✅ Latest Gemini SDK
 
 from scripts.utils import load_all_knowledge, encode_text, MiniEmbeddingModel

@@ -2,7 +2,7 @@ import torch
 import faiss
 import numpy as np
 import pickle
-from utils.utils import encode_text, load_feeding_json, MiniEmbeddingModel,load_all_knowledge
+from scripts.utils import encode_text, load_feeding_json, MiniEmbeddingModel,load_all_knowledge
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 

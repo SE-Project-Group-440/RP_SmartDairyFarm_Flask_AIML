@@ -1,4 +1,4 @@
-from utils.utils import (
+from scripts.utils import (
     load_feeding_json,
     prepare_corpus,
     init_bpe_vocab,
