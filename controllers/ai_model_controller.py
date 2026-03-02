@@ -7,7 +7,7 @@ from services.ai_model_service import (
 )
 
 class PredictRequest(BaseModel):
-    row: dict  # Accept a single cow's row as dict
+    row: dict  
 
 class PredictionController:
 

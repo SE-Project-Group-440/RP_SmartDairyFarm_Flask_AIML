@@ -3,9 +3,8 @@ import joblib
 from datetime import datetime, timedelta
 import os
 
-# ===============================
-# Load XGBoost and Cox models
-# ===============================
+
+# XGBoost and Cox models
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODEL_DIR = os.path.join(BASE_DIR, "AI_Predictor")
 
@@ -35,12 +34,9 @@ def prepare_features(row: dict):
     features["Milking/Dry"] = row["Milking/Dry"]
     features["Hormonal Treatment"] = row["Hormonal Treatment"]
     features["Estrus Cycle Length"] = row["Estrus Cycle Length"]
-
-    # Convert Yes/No → 1/0
     features["Milking/Dry"] = 1 if str(features["Milking/Dry"]).lower() == "yes" else 0
     features["Hormonal Treatment"] = 1 if str(features["Hormonal Treatment"]).lower() == "yes" else 0
 
-    # Calculated features
     prev_ai = row.get("Previous AI Dates", "")
     if isinstance(prev_ai, str):
         features["AI_Count"] = len(prev_ai.split(",")) if prev_ai else 0
