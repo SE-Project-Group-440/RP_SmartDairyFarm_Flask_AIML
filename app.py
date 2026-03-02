@@ -6,11 +6,9 @@ import os
 
 app = FastAPI(title="Sinhala Dairy RAG API")
 
-# Serve audio files
 AUDIO_DIR = "audio_files"
 os.makedirs(AUDIO_DIR, exist_ok=True)
 app.mount("/audio_files", StaticFiles(directory=AUDIO_DIR), name="audio_files")
 
-# Include routes
 app.include_router(chat_router)
 app.include_router(stt_router)

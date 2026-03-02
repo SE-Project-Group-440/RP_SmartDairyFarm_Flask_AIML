@@ -7,7 +7,7 @@ AUDIO_DIR = "audio_files"
 os.makedirs(AUDIO_DIR, exist_ok=True)
 
 def get_chat_response(query: str, audioUri: str) -> dict:
-    # Get the answer from your RAG model
+    # Get the answer from RAG model
     answer = rag_answer(query)
 
     # Generate audio
