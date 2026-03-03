@@ -4,7 +4,7 @@ def get_heat_prediction(cattle_id: str):
     
     cattle_id = cattle_id.capitalize()
 
-    thi = predict_thi_1hr(cattle_id)
+    thi, latest = predict_thi_1hr(cattle_id)
 
     if thi is None:
         return {
@@ -23,6 +23,10 @@ def get_heat_prediction(cattle_id: str):
 
     return {
         "cattle_id": cattle_id,
+
+        "body_temp": latest.get("bodyTemp"),
+        "env_temp": latest.get("envTemp"),
+        "humidity": latest.get("humidity"),
         "thi_index_1hr_ahead": thi,
         "stress_level": level
     }
