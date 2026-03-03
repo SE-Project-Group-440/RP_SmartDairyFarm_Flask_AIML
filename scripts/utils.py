@@ -175,5 +175,5 @@ def load_all_knowledge(base_dir: str) -> List[KnowledgeDocument]:
             docs = load_qa_json(json_path)
             all_docs.extend(docs)
 
-    print(f"✅ Total knowledge documents loaded: {len(all_docs)}")
+    print(f"Total knowledge documents loaded: {len(all_docs)}")
     return all_docs

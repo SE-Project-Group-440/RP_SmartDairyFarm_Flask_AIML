@@ -65,7 +65,6 @@ def rag_answer(query: str, top_k: int = 3):
     if not retrieved_docs:
         return "මෙම ප්‍රශ්නයට සම්බන්ධ තොරතුරු දැනුම් පදනමේ නොමැත."
     
-     # ✅✅ ADD THIS BLOCK (DEDUPLICATION FIX) ✅✅
     unique_chunks = list(
         dict.fromkeys(
             [doc.page_content.strip() for doc in retrieved_docs]

@@ -38,4 +38,4 @@ with open("models/bpe_merges.pkl", "wb") as f:
 with open("models/bpe_vocab.pkl", "wb") as f:
     pickle.dump(bpe_vocab, f)
 
-print("✅ BPE files saved")
+print("BPE files saved")

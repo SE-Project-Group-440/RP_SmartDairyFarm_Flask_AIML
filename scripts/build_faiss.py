@@ -36,4 +36,4 @@ index = faiss.IndexFlatIP(embedding_dim)
 index.add(embeddings)
 
 faiss.write_index(index, "vectorstore/knowledge.index")
-print(f"✅ FAISS index built with {index.ntotal} documents")
+print(f"FAISS index built with {index.ntotal} documents")
