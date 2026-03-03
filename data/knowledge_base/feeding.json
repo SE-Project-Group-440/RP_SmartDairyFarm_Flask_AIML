@@ -1,0 +1,142 @@
+[
+  {
+    "id": "feed_001",
+    "category": "calf_feeding",
+    "question": "කිරි පැටවාට උපතෙන් පසු පළමු ආහාරය කුමක්ද?",
+    "answer": "කිරි පැටවාට උපතෙන් පැය 1–2 ඇතුළත කොලොස්ට්‍රම් කිරි ලබාදීම අත්‍යවශ්‍ය වේ. මෙය ප්‍රතිශක්තිකරණය වැඩි කර රෝග වලින් ආරක්ෂා කරයි.",
+    "source": "Veterinary guidelines – Sri Lanka"
+  },
+  {
+    "id": "feed_002",
+    "category": "calf_feeding",
+    "question": "කිරි පැටවකුට දිනකට කිරි කොපමණ ප්‍රමාණයක් ලබාදිය යුතුද?",
+    "answer": "පැටවාගේ බර අනුව දිනකට ශරීර බරේ 10% පමණ කිරි ලබාදීම සුදුසුය.",
+    "source": "Dairy farming manuals"
+  },
+  {
+    "id": "feed_003",
+    "category": "calf_feeding",
+    "question": "කිරි පැටවකුට පිරිසිදු ජලය ලබාදිය යුතුද?",
+    "answer": "ඔව්. උපතෙන් දින කිහිපයකින් පසු පිරිසිදු ජලය සැමවිටම ලබාදිය යුතුය.",
+    "source": "Livestock extension services"
+  },
+  {
+    "id": "feed_004",
+    "category": "heifer_feeding",
+    "question": "හීෆර් ගවයෙකුට කෑම දීමේ ප්‍රධාන අරමුණ කුමක්ද?",
+    "answer": "හීෆර් ගවයෙකුට සමාන්‍ය ශරීර වර්ධනය සහ සෞඛ්‍යවත් ප්‍රජනනය සඳහා සමාන්‍ය පෝෂණය ලබාදීමයි.",
+    "source": "Sri Lanka Dairy Development Dept"
+  },
+  {
+    "id": "feed_005",
+    "category": "heifer_feeding",
+    "question": "හීෆර් ගවයන්ට නේපියර් තෘණය හොඳද?",
+    "answer": "ඔව්. නේපියර් තෘණය හීෆර් ගවයන්ට හොඳ තන්තු සහ ශක්තිය ලබාදේ.",
+    "source": "Department of Animal Production"
+  },
+  {
+    "id": "feed_006",
+    "category": "lactating_cow",
+    "question": "කිරි දෙන ගවයකුට වැඩිපුර ආහාර අවශ්‍ය ඇයි?",
+    "answer": "කිරි නිෂ්පාදනය සඳහා වැඩි ශක්තිය සහ පෝෂක අවශ්‍ය වන බැවින් වැඩිපුර ආහාර අවශ්‍ය වේ.",
+    "source": "Dairy nutrition guides"
+  },
+  {
+    "id": "feed_007",
+    "category": "lactating_cow",
+    "question": "කිරි ගවයකුට දිනකට ජලය කොපමණ අවශ්‍යද?",
+    "answer": "කිරි දෙන ගවයකුට දිනකට ලීටර් 50–70 අතර පිරිසිදු ජලය අවශ්‍ය වේ.",
+    "source": "Veterinary nutrition data"
+  },
+  {
+    "id": "feed_008",
+    "category": "lactating_cow",
+    "question": "කිරි නිෂ්පාදනය වැඩි කිරීමට හොඳ ආහාර මොනවාද?",
+    "answer": "නේපියර්, ගිනී තෘණ, පොල් පූනක් සහ රයිස් බ්‍රෑන් මිශ්‍ර ආහාර ලෙස ලබාදීම හොඳය.",
+    "source": "Local dairy feeding practices"
+  },
+  {
+    "id": "feed_009",
+    "category": "dry_cow",
+    "question": "ඩ්‍රයි ගවයෙකුට කිරි දෙන ගවයෙකුට වඩා අඩු ආහාර දිය යුතුද?",
+    "answer": "ඔව්. ඩ්‍රයි කාලයේදී අතිරේක ශක්තිමත් ආහාර අවශ්‍ය නොවේ.",
+    "source": "Dairy cow management manuals"
+  },
+  {
+    "id": "feed_010",
+    "category": "dry_cow",
+    "question": "ඩ්‍රයි ගවයකුට හොඳ ආහාර කුමක්ද?",
+    "answer": "හොඳ තෘණ, පිරිසිදු ජලය සහ මිනරල් සපුරාලන ආහාර ප්‍රමාණවත් වේ.",
+    "source": "Veterinary feeding guides"
+  },
+  {
+    "id": "feed_011",
+    "category": "feed_types",
+    "question": "ශ්‍රී ලංකාවේ බහුලව භාවිත වන ගව ආහාර කුමක්ද?",
+    "answer": "නේපියර් තෘණ, ගිනී තෘණ, රයිස් බ්‍රෑන් සහ පොල් පූනක් බහුලව භාවිත වේ.",
+    "source": "Sri Lankan dairy practices"
+  },
+  {
+    "id": "feed_012",
+    "category": "feed_types",
+    "question": "පොල් පූනක් ගවයන්ට හොඳද?",
+    "answer": "ඔව්. පොල් පූනක් ශක්තිය සහ ප්‍රෝටීන් සපයන අඩු වියදම් ආහාරයකි.",
+    "source": "Animal nutrition studies"
+  },
+  {
+    "id": "feed_013",
+    "category": "minerals",
+    "question": "ගවයන්ට මිනරල් දීම වැදගත්ද?",
+    "answer": "ඔව්. මිනරල් හිඟය නිසා ප්‍රජනන ගැටළු සහ අඩු කිරි නිෂ්පාදනය ඇතිවිය හැක.",
+    "source": "Veterinary research"
+  },
+  {
+    "id": "feed_014",
+    "category": "minerals",
+    "question": "මිනරල් ලික්ස් ගවයන්ට කොහොමද භාවිතා කරන්නේ?",
+    "answer": "ගවයන්ට කැමති ලෙස ලික් කිරීමට හැකි ස්ථානයක මිනරල් ලික් තැබිය යුතුය.",
+    "source": "Livestock extension advice"
+  },
+  {
+    "id": "feed_015",
+    "category": "seasonal_feeding",
+    "question": "වියළි කාලයේදී ගව ආහාරය වෙනස් කළ යුතුද?",
+    "answer": "ඔව්. වියළි කාලයේදී සංරක්ෂිත තෘණ සහ අමතර ආහාර ලබාදිය යුතුය.",
+    "source": "Seasonal dairy management"
+  },
+  {
+    "id": "feed_016",
+    "category": "seasonal_feeding",
+    "question": "වැසි කාලයේදී ගවයන්ට විශේෂ ආහාර අවශ්‍යද?",
+    "answer": "වැසි කාලයේදී තෘණ බහුල බැවින් ගුණාත්මක තෘණ තෝරා ලබාදීම ප්‍රමාණවත් වේ.",
+    "source": "Dairy farming experience"
+  },
+  {
+    "id": "feed_017",
+    "category": "low_cost_feeding",
+    "question": "කුඩා පරිමාණ ගොවිපලකට අඩු වියදම් ආහාර ක්‍රම මොනවාද?",
+    "answer": "ගෙවත්තේ තෘණ වගා කිරීම සහ දේශීය ආහාර භාවිතය අඩු වියදම් ක්‍රම වේ.",
+    "source": "Smallholder dairy guides"
+  },
+  {
+    "id": "feed_018",
+    "category": "low_cost_feeding",
+    "question": "රයිස් බ්‍රෑන් ගව ආහාරයට එකතු කළ හැකිද?",
+    "answer": "ඔව්. නියමිත ප්‍රමාණයෙන් රයිස් බ්‍රෑන් එකතු කිරීම ආර්ථිකව වාසිදායකය.",
+    "source": "Local feeding practices"
+  },
+  {
+    "id": "feed_019",
+    "category": "water_intake",
+    "question": "ගවයන්ට ජලය නොලැබුනොත් කුමක් සිදුවේද?",
+    "answer": "ජල හිඟය නිසා කිරි නිෂ්පාදනය අඩුවී සෞඛ්‍ය ගැටළු ඇතිවිය හැක.",
+    "source": "Veterinary health data"
+  },
+  {
+    "id": "feed_020",
+    "category": "water_intake",
+    "question": "ගවයන්ට ලබාදෙන ජලය පිරිසිදු විය යුතුද?",
+    "answer": "ඔව්. අපිරිසිදු ජලය රෝග පැතිරීමට හේතු විය හැකි බැවින් පිරිසිදු ජලය අත්‍යවශ්‍ය වේ.",
+    "source": "Animal health guidelines"
+  }
+]
