@@ -35,7 +35,7 @@ index = faiss.read_index(str(VECTOR_DIR / "knowledge.index"))
 docs = load_all_knowledge("data/knowledge_base")
 
 
-def retrieve_faiss_custom(query: str, top_k: int = 5):
+def retrieve_faiss_custom(query: str, top_k: int = 10):
     model.eval()
     q_ids = encode_text(query, bpe_merges, bpe_vocab).unsqueeze(0).to(device)
     with torch.no_grad():
