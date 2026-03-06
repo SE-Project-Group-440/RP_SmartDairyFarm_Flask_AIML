@@ -30,7 +30,7 @@ model.eval()
 # Load FAISS
 index = faiss.read_index("vectorstore/knowledge.index")
 
-# Automatically collect all GROQ_API_KEY_N keys
+# Collect all GROQ_API_KEY_N keys
 api_keys = []
 i = 1
 while True:
@@ -43,19 +43,19 @@ while True:
 if not api_keys:
     raise ValueError("No GROQ_API_KEY_N variables found in .env")
 
-# Create a client generator that cycles through keys
 def groq_client_factory():
     for key in api_keys:
         yield Groq(api_key=key)
 
 clients = groq_client_factory()
-# Create an endless cycling iterator over keys
 clients_cycle = itertools.cycle(api_keys)
 
 def groq_chat_request(messages, model="llama-3.3-70b-versatile", temperature=0.35, max_tokens=2048):
-    for _ in range(len(api_keys)):
-        key = next(clients_cycle)
+    
+    while True:  
+        key = next(clients_cycle)  
         client = Groq(api_key=key)
+
         try:
             response = client.chat.completions.create(
                 model=model,
@@ -63,16 +63,19 @@ def groq_chat_request(messages, model="llama-3.3-70b-versatile", temperature=0.3
                 temperature=temperature,
                 max_tokens=max_tokens
             )
+
             return response
+
         except Exception as e:
             err_msg = str(e).lower()
+
             if "quota" in err_msg or "tokens" in err_msg or "rate limit" in err_msg:
-                print(f"API key exhausted or rate limited: {key}. Trying next key...")
-                continue  # try the next key
+                print(f"API key exhausted or rate limited: {key}. Switching key...")
+                continue 
+
             else:
-                raise e
-    # If all keys fail in this cycle
-    raise RuntimeError("All Groq API keys failed in this cycle.")
+                print(f"Unexpected error with key {key}: {e}")
+                continue
 
 def build_prompt(context: str, query: str) -> str:
     return f"""
@@ -94,6 +97,7 @@ def build_prompt(context: str, query: str) -> str:
 4. පිළිතුර අවසානයේ සම්පූර්ණ වාක්‍යයකින් අවසන් කරන්න
 5. පිළිතුර විස්තරාත්මක විය යුතුය, අවම වශයෙන් 5–6 කොටස්වලට බෙදා ලියන්න
 6. Markdown (** , ## , - ) භාවිතා නොකරන්න
+7. පිළිතුර අවසන් වන්නේ සම්පූර්ණ වාක්‍යයකින් විය යුතුය. වාක්‍ය අඩකින් නවත්වන්න එපා.
 
 """
 
