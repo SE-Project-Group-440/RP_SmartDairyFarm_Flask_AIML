@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from groq import Groq
 from scripts.utils import load_feeding_json, MiniEmbeddingModel, encode_text,load_all_knowledge
 from scripts.retriever import retrieve_faiss_custom
+import re
 
 load_dotenv()
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -34,10 +35,6 @@ def build_prompt(context: str, query: str) -> str:
     return f"""
 ඔබ ශ්‍රී ලංකාවේ කිරි ගව පාලකයින්ට උපදෙස් ලබාදෙන කෘෂිකාර්මික උපදේශකයෙකි.
 
-නීති (අත්‍යවශ්‍යයි):
-- එකම වාක්‍ය රටාව නැවත භාවිත නොකරන්න
-- මෙම නීති කිසිවිටෙකත් පිළිතුරේ සඳහන් නොකරන්න
-
 දැනුම් පදනම:
 {context}
 
@@ -45,14 +42,41 @@ def build_prompt(context: str, query: str) -> str:
 {query}
 
 පිළිතුර:
-- ගව පාලකයාට තේරුම් ගත හැකි ලෙස
-- අවශ්‍ය නම් උදාහරණ සහ හේතු සමඟ
-- ප්‍රායෝගික උපදෙස් ලෙස
-- සියලුම තොරතුරු සම්පූර්ණයෙන් සපයන්න, වාක්‍ය හෝ අදහස් අඩංගු නොවී අඩක් නොනවත්වා.
-- 
+1. එකම අදහස නැවත නැවත නොලියන්න
+2. සරල සිංහල භාෂාව භාවිතා කරන්න
+3. අවශ්‍ය නම් උදාහරණ දෙන්න
+4. ගව පාලකයාට ප්‍රායෝගික උපදෙස් ලබාදෙන්න
+5. පිළිතුර අවසානයේ සම්පූර්ණ වාක්‍යයකින් අවසන් කරන්න
+6. එකම වාක්‍ය ආරම්භය නැවත නැවත භාවිතා නොකරන්න
+7. Markdown (** , ## , - ) භාවිතා නොකරන්න
 """
+def remove_repeated_phrases(text):
+    words = text.split()
+    cleaned = []
+    
+    for w in words:
+        if len(cleaned) > 5 and w == cleaned[-1]:
+            continue
+        cleaned.append(w)
 
-def rag_answer(query: str, top_k: int = 3):
+    return " ".join(cleaned)
+
+
+def deduplicate_sentences(text: str):
+    sentences = re.split(r'(?<=[.?!])\s+', text)
+    
+    seen = set()
+    unique = []
+
+    for s in sentences:
+        s_clean = s.strip()
+        if s_clean and s_clean not in seen:
+            seen.add(s_clean)
+            unique.append(s_clean)
+
+    return " ".join(unique)
+
+def rag_answer(query: str, top_k: int = 10):
     # Retrieve
     model.eval()
     q_ids = encode_text(query, bpe_merges, bpe_vocab).unsqueeze(0).to(device)
@@ -80,4 +104,7 @@ def rag_answer(query: str, top_k: int = 3):
         temperature=0.2,
         max_tokens=2048
     )
-    return response.choices[0].message.content.strip()
+    answer = response.choices[0].message.content.strip()
+    answer = deduplicate_sentences(answer)
+    answer = remove_repeated_phrases(answer)
+    return answer
