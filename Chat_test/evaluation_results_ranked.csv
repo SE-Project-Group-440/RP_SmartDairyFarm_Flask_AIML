@@ -1,0 +1,6 @@
+model,latency_sec,context_overlap,sinhala_ratio,answer_length,final_score
+llama_8b,1.75,0.739,0.763,88,0.703
+llama_70b,3.68,0.182,0.768,62,0.355
+gpt_120b,2.31,0.079,0.629,188,0.338
+llama_guard,0.4,0.0,0.0,1,0.179
+gpt_20b,1.39,0.0,0.0,0,0.124
