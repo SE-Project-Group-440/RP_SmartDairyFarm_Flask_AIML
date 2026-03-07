@@ -101,7 +101,6 @@ def build_prompt(context: str, query: str) -> str:
 
 """
 
-
 def deduplicate_sentences(text: str):
     sentences = re.split(r'(?<=[.?!])\s+', text)
     

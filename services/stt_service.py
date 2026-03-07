@@ -8,8 +8,9 @@ from google.cloud import speech_v1p1beta1 as speech
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.join(
     os.getcwd(),
     "secrets",
-    "service_account.json"
+    "fabled-imagery-457304-q6-c87e0c9cda76.json"
 )
+
 ffmpeg_dir = os.path.join(os.getcwd(), "bin")
 os.environ["PATH"] += os.pathsep + ffmpeg_dir
 
@@ -47,11 +48,13 @@ def speech_to_text(file_bytes: bytes) -> dict:
 
         response = client.recognize(config=config, audio=audio_config)
         text = " ".join([result.alternatives[0].transcript for result in response.results])
+        print("STT success:", text)  
         return {"text": text}
 
     except subprocess.CalledProcessError as e:
         return {"error": f"ffmpeg conversion failed: {e}"}
     except Exception as e:
+        print("STT failed:", type(e), e)
         return {"error": str(e)}
     finally:
         for path in [raw_path, converted_path]:
