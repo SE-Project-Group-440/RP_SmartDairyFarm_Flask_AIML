@@ -1,8 +1,12 @@
-from flask import Blueprint
-from controllers.prediction_controller import PredictionController
+from fastapi import APIRouter, Header
+from controllers.prediction_controller import PredictionController, PredictRequest
 
-prediction_bp = Blueprint("prediction_bp", __name__)
+router = APIRouter()
 
-@prediction_bp.route("/predict", methods=["POST"])
-def predict():
-    return PredictionController.predict()
+@router.post("/predict")
+def predict(
+    data: PredictRequest,
+    authorization: str | None = Header(default=None)
+):
+
+    return PredictionController.predict(data, authorization)

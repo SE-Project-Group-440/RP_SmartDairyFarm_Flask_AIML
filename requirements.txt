@@ -8,3 +8,11 @@ faiss-cpu
 chromadb
 langchain-groq
 python-dotenv
+Flask
+torch
+torchvision
+pillow
+numpy
+opencv-python
+pytesseract
+scikit-learn
