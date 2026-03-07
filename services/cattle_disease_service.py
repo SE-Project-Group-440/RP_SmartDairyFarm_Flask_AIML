@@ -8,7 +8,7 @@ from io import BytesIO
 
 from fastapi import UploadFile
 
-from utils.ocr_utils import extract_text
+from utils.ocr_utils import extract_text, analyze_blood_parameters
 from utils.symptom_utils import analyze_symptoms
 from utils.fusion_utils import fuse_results
 
@@ -73,6 +73,10 @@ async def run_prediction(
             img = Image.open(BytesIO(report_bytes)).convert("RGB")  # Convert to PIL Image
             text = extract_text(img)  
             result["blood_report"] = text
+            
+            # Analyze blood parameters for health indicators
+            blood_analysis = analyze_blood_parameters(text)
+            result["blood_analysis"] = blood_analysis
 
         except Exception as e:
             result["report_error"] = str(e)

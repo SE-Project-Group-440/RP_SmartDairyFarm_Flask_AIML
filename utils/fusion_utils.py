@@ -118,8 +118,21 @@ def fuse_results(result):
                     }
                 }
     
-    # Blood report analysis (if implemented in future)
-    if "blood_report" in result:
+    # Blood report analysis - enhance confidence if unhealthy indicators found
+    if "blood_analysis" in result and result["blood_analysis"]["status"] != "no_data":
+        blood_status = result["blood_analysis"]["status"]
+        blood_confidence = result["blood_analysis"]["confidence"]
+        
+        if blood_status == "unhealthy":
+            # Blood report supports disease presence - boost confidence slightly
+            if prediction in ["FMD", "LSD"]:  # Only boost if disease predicted
+                confidence = min(confidence + 0.1, 1.0)  # Max 10% boost
+                confidence_sources.append(f"blood_report(unhealthy,+0.1)")
+            else:
+                confidence_sources.append(f"blood_report(unhealthy)")
+        else:
+            confidence_sources.append(f"blood_report(healthy)")
+    elif "blood_report" in result:
         confidence_sources.append("blood_report(available)")
     
     # Fallback with low confidence
