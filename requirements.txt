@@ -1,0 +1,8 @@
+Flask
+torch
+torchvision
+pillow
+numpy
+opencv-python
+pytesseract
+scikit-learn
