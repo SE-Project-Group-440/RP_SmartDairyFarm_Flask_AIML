@@ -22,7 +22,6 @@ def speech_to_text(file_bytes: bytes) -> dict:
         with open(raw_path, "wb") as f:
             f.write(file_bytes)
 
-        # Convert to LINEAR16 WAV
         exe_name = "ffmpeg.exe" if platform.system() == "Windows" else "ffmpeg"
         ffmpeg_path = os.path.join(ffmpeg_dir, exe_name)
 
