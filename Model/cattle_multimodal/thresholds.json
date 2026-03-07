@@ -6,6 +6,26 @@
     "LSD": 2
   },
 
+  "severity_classification": {
+    "confidence_thresholds": {
+      "severe": 0.80,
+      "moderate": 0.50,
+      "mild": 0.20
+    },
+    "symptom_severity_multipliers": {
+      "FMD": {
+        "severe": 4,
+        "moderate": 2,
+        "mild": 1
+      },
+      "LSD": {
+        "severe": 4,
+        "moderate": 2,
+        "mild": 1
+      }
+    }
+  },
+
   "fusion_rules": {
     "image_priority": true,
     "symptom_can_override": true,

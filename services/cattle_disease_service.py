@@ -1,6 +1,7 @@
 # services/cattle_disease_service.py
 
 import torch
+import torch.nn.functional as F
 from torchvision import models, transforms
 from PIL import Image
 from io import BytesIO
@@ -54,9 +55,11 @@ async def run_prediction(
 
             with torch.no_grad():
                 outputs = model(img)
-                _, predicted = torch.max(outputs, 1)
+                probabilities = F.softmax(outputs, dim=1)
+                confidence, predicted = torch.max(probabilities, 1)
 
             result["image_prediction"] = CLASSES[predicted.item()]
+            result["image_confidence"] = float(confidence.item())
 
         except Exception as e:
             result["image_error"] = str(e)
@@ -79,7 +82,9 @@ async def run_prediction(
     # --------------------------
     if symptoms_text:
         try:
-            result["symptoms_analysis"] = analyze_symptoms(symptoms_text)
+            symptoms_result = analyze_symptoms(symptoms_text)
+            result["symptoms_analysis"] = symptoms_result["scores"]
+            result["symptom_confidence"] = symptoms_result["confidence"]
         except Exception as e:
             result["symptoms_error"] = str(e)
 
@@ -87,7 +92,10 @@ async def run_prediction(
     # FUSION LOGIC
     # --------------------------
     try:
-        result["final_decision"] = fuse_results(result)
+        fusion_result = fuse_results(result)
+        result["final_decision"] = fusion_result["prediction"]
+        result["overall_confidence"] = fusion_result["confidence"]
+        result["severity_assessment"] = fusion_result["severity"]
     except Exception as e:
         result["fusion_error"] = str(e)
 
