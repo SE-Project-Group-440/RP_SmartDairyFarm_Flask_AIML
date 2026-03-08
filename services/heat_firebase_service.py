@@ -22,10 +22,12 @@ def get_latest_readings(cattle_id: str, limit: int = 6):
         return []
 
     rows = []
+    latest = None
     for _, v in sorted(data.items()):
         rows.append([
             v["envTemp"],
             v["humidity"]
         ])
+        latest = v
 
-    return rows
+    return rows, latest
