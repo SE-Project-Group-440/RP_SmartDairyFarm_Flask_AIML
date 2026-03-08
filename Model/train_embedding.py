@@ -48,4 +48,4 @@ for epoch in range(5):
     print(f"Epoch {epoch+1} Loss: {loss:.4f}")
 
 torch.save(model.state_dict(), "models/sinhala_embedding_model.pt")
-print("✅ Embedding model saved.")
+print("Embedding model saved.")
