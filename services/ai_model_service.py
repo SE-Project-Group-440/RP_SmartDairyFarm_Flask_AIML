@@ -23,30 +23,73 @@ survival_features = [
 ]
 
 
+# def prepare_features(row: dict):
+#     """Prepare features from your raw dataset row."""
+#     features = {}
+
+#     # Direct mapping
+#     features["Lactation No"] = row["Lactation No"]
+#     features["Milk_Yield"] = row["Milk_Yield"]
+#     features["Breed"] = row["Breed"]
+#     features["Milking/Dry"] = row["Milking/Dry"]
+#     features["Hormonal Treatment"] = row["Hormonal Treatment"]
+#     features["Estrus Cycle Length"] = row["Estrus Cycle Length"]
+#     features["Milking/Dry"] = 1 if str(features["Milking/Dry"]).lower() == "yes" else 0
+#     features["Hormonal Treatment"] = 1 if str(features["Hormonal Treatment"]).lower() == "yes" else 0
+
+#     prev_ai = row.get("Previous AI Dates", "")
+#     if isinstance(prev_ai, str):
+#         features["AI_Count"] = len(prev_ai.split(",")) if prev_ai else 0
+#     else:
+#         features["AI_Count"] = len(prev_ai)
+
+#     last_caving = pd.to_datetime(row["Last Caving Date"])
+#     features["DIM"] = (pd.to_datetime("today") - last_caving).days
+
+#     features["Age_at_PD_months"] = row["E. Age (Month)"]
+
+#     return features
 def prepare_features(row: dict):
-    """Prepare features from your raw dataset row."""
     features = {}
 
-    # Direct mapping
-    features["Lactation No"] = row["Lactation No"]
-    features["Milk_Yield"] = row["Milk_Yield"]
-    features["Breed"] = row["Breed"]
-    features["Milking/Dry"] = row["Milking/Dry"]
-    features["Hormonal Treatment"] = row["Hormonal Treatment"]
-    features["Estrus Cycle Length"] = row["Estrus Cycle Length"]
-    features["Milking/Dry"] = 1 if str(features["Milking/Dry"]).lower() == "yes" else 0
-    features["Hormonal Treatment"] = 1 if str(features["Hormonal Treatment"]).lower() == "yes" else 0
+    # numeric features
+    features["Lactation No"] = int(row["Lactation No"])
+    features["Milk_Yield"] = float(row["Milk_Yield"])
+    features["Estrus Cycle Length"] = int(row["Estrus Cycle Length"])
+    features["Age_at_PD_months"] = int(row["E. Age (Month)"])
 
-    prev_ai = row.get("Previous AI Dates", "")
+    # Breed encoding
+    breed_map = {
+        "Jersey": 0,
+        "Friesian": 1,
+        "Crossbreed": 2
+    }
+    features["Breed"] = breed_map.get(row["Breed"], 0)
+
+    # Milking / Dry encoding
+    milking_map = {
+        "Milking": 1,
+        "Dry": 0
+    }
+    features["Milking/Dry"] = milking_map.get(row["Milking/Dry"], 0)
+
+    # Hormonal treatment encoding
+    hormonal_map = {
+        "Yes": 1,
+        "No": 0
+    }
+    features["Hormonal Treatment"] = hormonal_map.get(row["Hormonal Treatment"], 0)
+
+    # AI count
+    prev_ai = row.get("Previous AI Dates", [])
     if isinstance(prev_ai, str):
         features["AI_Count"] = len(prev_ai.split(",")) if prev_ai else 0
     else:
         features["AI_Count"] = len(prev_ai)
 
+    # Days in milk
     last_caving = pd.to_datetime(row["Last Caving Date"])
     features["DIM"] = (pd.to_datetime("today") - last_caving).days
-
-    features["Age_at_PD_months"] = row["E. Age (Month)"]
 
     return features
 
