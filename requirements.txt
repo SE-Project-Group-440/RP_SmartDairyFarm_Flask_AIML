@@ -16,3 +16,14 @@ numpy
 opencv-python
 pytesseract
 scikit-learn
+FastAPI
+uvicorn
+starlette
+gtts
+google.cloud
+python-multipart
+xgboost
+lifelines
+tensorflow
+keras-tcn
+firebase-admin
