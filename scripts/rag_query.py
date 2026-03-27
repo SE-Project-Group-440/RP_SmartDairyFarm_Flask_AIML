@@ -76,7 +76,7 @@ def groq_chat_request(messages, model="llama-3.3-70b-versatile", temperature=0.3
             else:
                 print(f"Unexpected error with key {key}: {e}")
                 continue
-
+                
 def build_prompt(context: str, query: str) -> str:
     return f"""
 ඔබ ශ්‍රී ලංකාවේ කිරි ගව පාලකයින්ට උපදෙස් ලබාදෙන කෘෂිකාර්මික උපදේශකයෙකි.

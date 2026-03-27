@@ -7,6 +7,8 @@ from xgboost import XGBClassifier
 from lifelines import CoxPHFitter
 import matplotlib.pyplot as plt
 import joblib
+from lifelines.utils import concordance_index
+
 
 
 #LOAD DATA
@@ -39,10 +41,38 @@ for col in categorical_cols:
         df[col] = le.fit_transform(df[col].astype(str))
         le_dict[col] = le  
 
+# Convert Previous AI Outcomes to numeric
+# Map P=1, NP=0
+# Convert Previous AI Outcomes into numeric success rate
+def compute_success_rate(outcomes):
+    if pd.isna(outcomes):
+        return np.nan
+    # Split by comma
+    parts = [x.strip() for x in str(outcomes).split(",")]
+    # Map P=1, NP=0
+    nums = [1 if x == "P" else 0 for x in parts]
+    return np.mean(nums)
+
+df["Prev_AI_Success_Rate"] = df["Previous AI Outcomes"].apply(compute_success_rate)
+
+# Compute cumulative success rate per cow
+df["Past_AI_Success_Rate"] = (
+    df.groupby("Tag No.")["Prev_AI_Success_Rate"]
+      .transform(lambda x: x.shift().expanding().mean())
+)
+df["Past_AI_Success_Rate"] = df["Past_AI_Success_Rate"].fillna(0)
+
+# Days since last estrus
+df["Days_Since_Last_Estrus"] = (df["PD Date"] - df["Last Estrus/Heat Date"]).dt.days
+
+# Fill missing with median cycle length if estrus not recorded
+df["Days_Since_Last_Estrus"] = df["Days_Since_Last_Estrus"].fillna(df["Estrus Cycle Length"].median())
+
 # PREPARE MODEL FEATURES
 features = [
     "DIM", "Age_at_PD_months", "Lactation No", "AI_Count", "Milk_Yield",
-    "Breed", "Milking/Dry", "Hormonal Treatment", "Estrus Cycle Length"
+    "Breed", "Milking/Dry", "Hormonal Treatment", "Estrus Cycle Length",
+    "Estrus Signs","Past_AI_Success_Rate", "Days_Since_Last_Estrus"
 ]
 model_df = df[features + ["Pregnant"]].dropna()
 for col in features:
@@ -78,11 +108,31 @@ df["Pregnancy_Prob_Today"] = xgb_model.predict_proba(prediction_df)[:, 1]
 
 # COX SURVIVAL MODEL (TIME TO PREGNANCY)
 df["Time_to_Pregnancy"] = (df["PD Date"] - df["Caving Date"]).dt.days
-survival_features = ["DIM", "Milk_Yield", "Lactation No", "AI_Count", "Hormonal Treatment", "Estrus Cycle Length"]
+survival_features = ["DIM", "Milk_Yield", "Lactation No", "AI_Count", "Hormonal Treatment", "Estrus Cycle Length",
+    "Estrus Signs","Past_AI_Success_Rate", "Days_Since_Last_Estrus"]
 survival_df = df[["Time_to_Pregnancy", "Pregnant"] + survival_features].dropna()
 
 cph = CoxPHFitter()
 cph.fit(survival_df, duration_col="Time_to_Pregnancy", event_col="Pregnant")
+
+# Compute threshold probability from historical pregnancies
+pregnant_rows = survival_df[survival_df["Pregnant"] == 1]
+
+threshold_probs = []
+
+for idx, row in pregnant_rows.iterrows():
+    x = row[survival_features].to_frame().T
+    surv_func = cph.predict_survival_function(x)
+    day_of_event = row["Time_to_Pregnancy"]
+    
+    # survival probability on the day pregnancy occurred
+    if day_of_event in surv_func.index:
+        prob_at_event = surv_func.loc[day_of_event].values[0]
+        threshold_probs.append(prob_at_event)
+
+# Use median probability as threshold
+threshold_prob = np.median(threshold_probs)
+print(f"Data-driven threshold probability: {threshold_prob:.3f}")
 
 
 # RECOMMEND NEXT AI DATE
@@ -93,7 +143,7 @@ for idx, row in not_pregnant_df.iterrows():
     x = row[survival_features].to_frame().T
     surv_func = cph.predict_survival_function(x)
     
-    recommended_day = surv_func[surv_func.columns[0]][surv_func[surv_func.columns[0]] <= 0.5].index.min()
+    recommended_day = surv_func[surv_func.columns[0]][surv_func[surv_func.columns[0]] <= threshold_prob].index.min()
     if pd.isna(recommended_day):
         recommended_day = surv_func.index.max()
     
@@ -173,4 +223,19 @@ plt.ylim(0,1)
 plt.title("XGBoost Model Performance Metrics")
 plt.ylabel("Score")
 plt.xticks(rotation=45)
+plt.show()
+
+c_index = concordance_index(
+    event_times=survival_df["Time_to_Pregnancy"],
+    predicted_scores=-cph.predict_partial_hazard(survival_df),
+    event_observed=survival_df["Pregnant"]
+)
+print(f"Cox Model C-index: {c_index:.4f}")
+
+# Plot survival curves for first 5 cows
+cph.plot_partial_effects_on_outcome(
+    covariates="AI_Count",
+    values=[1, 2, 3],
+    plot_baseline=True
+)
 plt.show()

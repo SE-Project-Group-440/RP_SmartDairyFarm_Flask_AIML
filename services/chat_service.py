@@ -10,7 +10,7 @@ def get_chat_response(query: str, audioUri: str) -> dict:
     # Get the answer from RAG model
     answer = rag_answer(query)
 
-    # Generate audio
+    # Generate audio inline
     filename = f"{uuid.uuid4()}.wav"
     file_path = os.path.join(AUDIO_DIR, filename)
 
