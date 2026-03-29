@@ -14,12 +14,14 @@ cox_model = joblib.load(os.path.join(MODEL_DIR, "cox_model.pkl"))
 features_order = [
     "DIM", "Age_at_PD_months", "Lactation No", "AI_Count",
     "Milk_Yield", "Breed", "Milking/Dry",
-    "Hormonal Treatment", "Estrus Cycle Length"
+    "Hormonal Treatment", "Estrus Cycle Length",
+    "Estrus Signs", "Days_Since_Last_Estrus"
 ]
 
 survival_features = [
     "DIM", "Milk_Yield", "Lactation No",
-    "AI_Count", "Hormonal Treatment", "Estrus Cycle Length"
+    "AI_Count", "Hormonal Treatment", "Estrus Cycle Length",
+    "Estrus Signs", "Days_Since_Last_Estrus"
 ]
 
 
@@ -90,6 +92,10 @@ def prepare_features(row: dict):
     # Days in milk
     last_caving = pd.to_datetime(row["Last Caving Date"])
     features["DIM"] = (pd.to_datetime("today") - last_caving).days
+    
+    # Defaults for new survival features if not provided by frontend
+    features["Estrus Signs"] = int(row.get("Estrus Signs", 0))
+    features["Days_Since_Last_Estrus"] = int(row.get("Days_Since_Last_Estrus", features.get("Estrus Cycle Length", 21)))
 
     return features
 
@@ -111,6 +117,9 @@ def recommend_next_ai(row: dict):
     recommended_day += int(data.get("Estrus Cycle Length", 21))
 
     next_ai_date = datetime.today() + timedelta(days=int(recommended_day))
+
+    if next_ai_date.date() < datetime.today().date():
+        next_ai_date = datetime.today() + timedelta(days=7)
 
     return {
         "recommended_next_ai": next_ai_date.strftime("%Y-%m-%d")
