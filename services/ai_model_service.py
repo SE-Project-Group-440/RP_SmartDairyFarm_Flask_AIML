@@ -15,13 +15,13 @@ features_order = [
     "DIM", "Age_at_PD_months", "Lactation No", "AI_Count",
     "Milk_Yield", "Breed", "Milking/Dry",
     "Hormonal Treatment", "Estrus Cycle Length",
-    "Estrus Signs", "Past_AI_Success_Rate", "Days_Since_Last_Estrus"
+    "Estrus Signs", "Days_Since_Last_Estrus"
 ]
 
 survival_features = [
     "DIM", "Milk_Yield", "Lactation No",
     "AI_Count", "Hormonal Treatment", "Estrus Cycle Length",
-    "Estrus Signs", "Past_AI_Success_Rate", "Days_Since_Last_Estrus"
+    "Estrus Signs", "Days_Since_Last_Estrus"
 ]
 
 
@@ -95,7 +95,6 @@ def prepare_features(row: dict):
     
     # Defaults for new survival features if not provided by frontend
     features["Estrus Signs"] = int(row.get("Estrus Signs", 0))
-    features["Past_AI_Success_Rate"] = float(row.get("Past_AI_Success_Rate", 0.0))
     features["Days_Since_Last_Estrus"] = int(row.get("Days_Since_Last_Estrus", features.get("Estrus Cycle Length", 21)))
 
     return features

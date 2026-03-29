@@ -10,7 +10,6 @@ import joblib
 from lifelines.utils import concordance_index
 
 
-
 #LOAD DATA
 df = pd.read_excel("Reproduction_with_Milk.xlsx")
 df.columns = df.columns.str.strip()
@@ -41,26 +40,6 @@ for col in categorical_cols:
         df[col] = le.fit_transform(df[col].astype(str))
         le_dict[col] = le  
 
-# Convert Previous AI Outcomes to numeric
-# Map P=1, NP=0
-# Convert Previous AI Outcomes into numeric success rate
-def compute_success_rate(outcomes):
-    if pd.isna(outcomes):
-        return np.nan
-    # Split by comma
-    parts = [x.strip() for x in str(outcomes).split(",")]
-    # Map P=1, NP=0
-    nums = [1 if x == "P" else 0 for x in parts]
-    return np.mean(nums)
-
-df["Prev_AI_Success_Rate"] = df["Previous AI Outcomes"].apply(compute_success_rate)
-
-# Compute cumulative success rate per cow
-df["Past_AI_Success_Rate"] = (
-    df.groupby("Tag No.")["Prev_AI_Success_Rate"]
-      .transform(lambda x: x.shift().expanding().mean())
-)
-df["Past_AI_Success_Rate"] = df["Past_AI_Success_Rate"].fillna(0)
 
 # Days since last estrus
 df["Days_Since_Last_Estrus"] = (df["PD Date"] - df["Last Estrus/Heat Date"]).dt.days
@@ -72,7 +51,7 @@ df["Days_Since_Last_Estrus"] = df["Days_Since_Last_Estrus"].fillna(df["Estrus Cy
 features = [
     "DIM", "Age_at_PD_months", "Lactation No", "AI_Count", "Milk_Yield",
     "Breed", "Milking/Dry", "Hormonal Treatment", "Estrus Cycle Length",
-    "Estrus Signs","Past_AI_Success_Rate", "Days_Since_Last_Estrus"
+    "Estrus Signs", "Days_Since_Last_Estrus"
 ]
 model_df = df[features + ["Pregnant"]].dropna()
 for col in features:
@@ -109,7 +88,7 @@ df["Pregnancy_Prob_Today"] = xgb_model.predict_proba(prediction_df)[:, 1]
 # COX SURVIVAL MODEL (TIME TO PREGNANCY)
 df["Time_to_Pregnancy"] = (df["PD Date"] - df["Caving Date"]).dt.days
 survival_features = ["DIM", "Milk_Yield", "Lactation No", "AI_Count", "Hormonal Treatment", "Estrus Cycle Length",
-    "Estrus Signs","Past_AI_Success_Rate", "Days_Since_Last_Estrus"]
+    "Estrus Signs", "Days_Since_Last_Estrus"]
 survival_df = df[["Time_to_Pregnancy", "Pregnant"] + survival_features].dropna()
 
 cph = CoxPHFitter()
