@@ -2,7 +2,7 @@
 from fastapi import APIRouter, File, Form, Header, UploadFile
 from controllers.cattle_disease_controller import predict_cattle_disease
 
-router = APIRouter(prefix="/api/cattle", tags=["Cattle Disease"])
+router = APIRouter(prefix="/cattle/disease", tags=["Cattle Disease"])
 
 @router.post("/predict")
 async def predict(
