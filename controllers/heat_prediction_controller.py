@@ -1,3 +1,4 @@
+from firebase_admin import db
 from services.heat_prediction_service import predict_thi_1hr
 
 def get_heat_prediction(cattle_id: str):
@@ -20,6 +21,12 @@ def get_heat_prediction(cattle_id: str):
         level = "Mild"
     else:
         level = "Normal"
+
+    db.reference(f"thi/{cattle_id}").set({
+    "value": thi,
+    "stress_level": level,
+    "alert": thi >= 78
+})
 
     return {
         "cattle_id": cattle_id,
