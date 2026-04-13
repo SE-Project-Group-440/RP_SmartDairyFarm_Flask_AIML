@@ -87,3 +87,12 @@ async def trigger_retraining(payload: RetrainRequest):
 async def pipeline_status():
     """Returns the current model version and last retraining info."""
     return _service.get_status()
+
+
+@router.get("/batches")
+async def pipeline_batches():
+    """Compatibility endpoint for UI clients expecting a batches list."""
+    return {
+        "batches": [],
+        "status": _service.get_status(),
+    }
